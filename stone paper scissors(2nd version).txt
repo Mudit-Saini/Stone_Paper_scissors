@@ -1,0 +1,164 @@
+﻿import random
+
+print("""
+                       =======================
+                             Rock Paper Scissors
+                       =======================
+""")
+print("Welcome!")
+while True:
+    # 1. Choose difficulty
+    print("""
+Select difficulty level:
+   1. Easy
+   2. Medium
+   3. Impossible""")
+    level = input("Enter 1, 2 or 3: ").strip()
+    while level not in ("1", "2", "3"):
+        level = input("Invalid—enter 1, 2 or 3: ").strip()
+
+    # 2. Number of rounds
+    rounds_input = input("How many rounds? ").strip()
+    if rounds_input.isdigit():
+        rounds = int(rounds_input)
+        if rounds_input == 0:
+            rounds = 5
+            print("Invalid Input; defaulting to 5 rounds.")
+    else:
+        rounds = 5
+        print("Invalid Input; defaulting to 5 rounds.")
+
+    # 3. Initialize scores & history counts
+    player_score = 0
+    computer_score = 0
+    tie_score = 0
+    count_1 = count_2 = count_3 = 0  # track your past choices
+
+    print("\nLet’s play!  (enter 'q' any time to quit)\n")
+
+    for r in range(1, rounds + 1):
+        
+        print(f"{'-'*40}")
+        print(f" Round {r}:")
+        print(f"""
+1) Stone                          SCOREBOARD
+2) Paper                          You: {player_score}
+3) Scissors                       CPU: {computer_score}
+q) Quit                           Ties: {tie_score}
+             
+""")
+        
+        move = input("   Your choice: ").strip().lower()
+        if move == 'q':
+            print("\nYou chose to quit early.")
+            break
+        while move not in ("1", "2", "3", "q"):
+            move = input("   Invalid—enter 1, 2, 3 or q: ").strip().lower()
+            if move == 'q':
+                break
+        if move == 'q':
+            print("\nYou chose to quit early.")
+            break
+
+        player = int(move)
+
+        # Computer move
+        if level == "1":  # Easy
+            computer = random.randint(1, 3)
+
+        elif level == "3":  # Impossible
+            if player == 1:
+                computer = 2
+            elif player == 2:
+                computer = 3
+            else:
+                computer = 1
+
+        else:  # Medium
+            total = count_1 + count_2 + count_3
+            if total == 0:
+                computer = random.randint(1, 3)
+            else:
+                # predict your most frequent past move
+                if count_1 >= count_2 and count_1 >= count_3:
+                    predicted = 1
+                elif count_2 >= count_1 and count_2 >= count_3:
+                    predicted = 2
+                else:
+                    predicted = 3
+                # 65% counter, 35% random
+                if random.random() < 0.65:
+                    if predicted == 1:
+                        computer = 2
+                    elif predicted == 2:
+                        computer = 3
+                    else:
+                        computer = 1
+                else:
+                    computer = random.randint(1, 3)
+            # update history
+            if player == 1:
+                count_1 += 1
+            elif player == 2:
+                count_2 += 1
+            else:
+                count_3 += 1
+
+        # Decide winner
+        if player == computer:
+            result = "Tie"
+            tie_score += 1
+        elif (player == 1 and computer == 3) or \
+             (player == 2 and computer == 1) or \
+             (player == 3 and computer == 2):
+            result = "Player"
+            player_score += 1
+        else:
+            result = "Computer"
+            computer_score += 1
+
+        # Report round
+        if player == 1:
+            pname = "Stone"
+        elif player == 2:
+            pname = "Paper"
+        else:
+            pname = "Scissors"
+        if computer == 1:
+            cname = "Stone"
+        elif computer == 2:
+            cname = "Paper"
+        else:
+            cname = "Scissors"
+
+        print(f"""
+You chose: {pname}
+CPU chose: {cname}""")
+        print(f"   {'Its a tie!' if result=='Tie' else result + ' wins!'}\n")
+
+
+    # Final tally
+    print("\n=== Final Score ===")
+    print(f"You : {player_score}")
+    print(f"CPU : {computer_score}")
+    print(f"Ties: {tie_score}")
+    if player_score > computer_score:
+        print("?? You’re the overall winner!")
+    elif player_score < computer_score:
+        print("?? Computer wins overall!")
+    else:
+        print("?? It’s an overall tie!")
+
+    # Play again?
+    while True:
+        again = input("\nPlay again? (y/n): ").strip().lower()
+        if again == 'n' or again == 'no':
+            print("Thanks for playing! Goodbye.")
+            exit()
+        elif again == 'y' or again == 'yes':
+            print("\n" + "="*60)
+            print("="*60 + "\n")
+            break
+        else:
+            print("Please enter yes or no")
+        
